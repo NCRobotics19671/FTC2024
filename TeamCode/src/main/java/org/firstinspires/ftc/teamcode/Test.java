@@ -22,7 +22,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
@@ -45,8 +45,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 @TeleOp(group="Iterative Opmode")
 
-public class Test extends OpMode
-{
+public class Test extends OpMode {
     // Declare OpMode members.
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -58,14 +57,14 @@ public class Test extends OpMode
     private DcMotor Alien = null;
     private DcMotor PickupL = null;
     private DcMotor PickupR = null;
-    CRServo RightServo;
-    CRServo LeftServo;
+    private Servo RightServo = null;
+    private Servo LeftServo = null;
 
     TouchSensor touch;
 
 
-    Orientation             lastAngles = new Orientation();
-    double                  globalAngle, power = .30, correction, rotation;
+    Orientation lastAngles = new Orientation();
+    double globalAngle, power = .30, correction, rotation;
     static RevHubOrientationOnRobot.LogoFacingDirection[] logoFacingDirections
             = RevHubOrientationOnRobot.LogoFacingDirection.values();
     static RevHubOrientationOnRobot.UsbFacingDirection[] usbFacingDirections
@@ -79,13 +78,11 @@ public class Test extends OpMode
     boolean orientationIsValid = true;
 
 
-
-
     double powerCoef = 0.75;
     float left = 0;
 
     float right = 0;
-    boolean toggleA = false;
+    boolean toggleA = true;
 
     boolean toggleB = false;
 
@@ -98,40 +95,9 @@ public class Test extends OpMode
         telemetry.addData("Status", "Initializing");
         telemetry.update();
 
-        imu = hardwareMap.get(IMU.class, "imu");
-        logoFacingDirectionPosition = 4; // Left
-        usbFacingDirectionPosition = 0; // Up
 
-        updateOrientation();
-
-        boolean justChangedLogoDirection = false;
-        boolean justChangedUsbDirection = false;
-
-
-
-        // Declare our motors
-        // Make sure your ID's match your configuration
-        motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft");
-        motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft");
-        motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight");
-        motorBackRight = hardwareMap.dcMotor.get("motorBackRight");
-
-        Arm = hardwareMap.dcMotor.get("Arm");
-        Alien = hardwareMap.dcMotor.get("Alien");
-        PickupL = hardwareMap.dcMotor.get("PickupL");
-        PickupR = hardwareMap.dcMotor.get("PickupR");
-        touch = hardwareMap.get(TouchSensor.class, "Touch");
-
-        LeftServo = hardwareMap.get(CRServo.class, "LeftServo");
-        RightServo = hardwareMap.get(CRServo.class, "RightServo");
-
-        Arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        Alien.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        // Reverse the right side motors
-        // Reverse left motors if you are using NeveRests
-        motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        LeftServo = hardwareMap.get(Servo.class, "LeftServo");
+        RightServo = hardwareMap.get(Servo.class, "RightServo");
 
 
         // Tell the driver that initialization is complete.
@@ -152,12 +118,8 @@ public class Test extends OpMode
     @Override
     public void start() {
         runtime.reset();
-        if (touch.isPressed())
-        {Arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            Alien.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            Arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            Alien.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }
+
+
     }
 
     /*
@@ -168,24 +130,7 @@ public class Test extends OpMode
 
         // Setup a variable for each drive wheel to save power level for telemetry
 
-        double liftPower = 0;
-        double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
-        double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-        double rx = gamepad1.right_stick_x;
 
-        // Denominator is the largest motor power (absolute value) or 1
-        // This ensures all the powers maintain the same ratio,
-        // but only if at least one is out of the range [-1, 1]
-        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-        double frontLeftPower = (y + x + rx) / denominator;
-        double backLeftPower = (y - x + rx) / denominator;
-        double frontRightPower = -(y - x - rx) / denominator;
-        double backRightPower = -(y + x - rx) / denominator;
-
-        motorFrontLeft.setPower(frontLeftPower);
-        motorBackLeft.setPower(backLeftPower);
-        motorFrontRight.setPower(frontRightPower);
-        motorBackRight.setPower(backRightPower);
 
 
         /*double y = -gamepad1.left_stick_y; // Remember, this is reversed!
@@ -217,153 +162,47 @@ public class Test extends OpMode
         motorBackRight.setPower(powerCoef*backRightPower);*/
 
 
-        if (gamepad1.right_bumper && !touch.isPressed() && Alien.getCurrentPosition() < 7690) {
-            Alien.setPower(1);
-
-
-        }
-        else {
-            if (gamepad1.left_bumper && Alien.getCurrentPosition() > 0) {
-                Alien.setPower(-1);
-
-
-            }
-            else {
-                Alien.setPower(0);
-
-            }
-
-        }
-
-
-        if (gamepad1.dpad_up) {
-            LeftServo.setPower(1);
-
-
-        }
-        else {
-            if (gamepad1.dpad_down) {
-                LeftServo.setPower(-1);
-
-
-            } else {
-                LeftServo.setPower(0);
-
-            }
-        }
-        if (gamepad1.dpad_right) {
-            RightServo.setPower(1);
-
-
-        }
-        else {
-            if (gamepad1.dpad_left) {
-                RightServo.setPower(-1);
-
-
-            }
-            else {
-                RightServo.setPower(0);
-
-            }
-
-        }
-
-
-        if (Arm.getCurrentPosition() > 4838)
-        {right = 0;}
-        else {right = gamepad1.right_trigger;}
-        if (!touch.isPressed())
-        {left = gamepad1.left_trigger;}
-        else {left = 0;}
-        float power = right - left;
-
-        Arm.setPower(power);
-
         /**********Pickup********/
+        //if (!gamepad1.a) {
+        //    toggleA = true;
+        //}
+
         if (!gamepad1.a) {
             toggleA = true;
         }
 
         if(gamepad1.a && toggleA){
             toggleA=false;
-            if(PickupL.getPower() != 0){
-                PickupL.setPower(0);
-                PickupR.setPower(0);
-
+            if(!toggleB){
+                toggleB = true;
+                LeftServo.setPosition(0.5);
+                RightServo.setPosition(0.5);
             }
-            else if(PickupL.getPower() == 0){
-                PickupL.setPower(1);
-                PickupR.setPower(1);
-
-            }
-
-        }
-
-        if (!gamepad1.b) {
-            toggleB = true;
-        }
-
-        if(gamepad1.b && toggleB){
-            toggleB=false;
-            if(PickupL.getPower() != 0){
-                PickupL.setPower(0);
-                PickupR.setPower(0);
-
-
-            }
-            else if(PickupL.getPower() == 0){
-                PickupL.setPower(-1);
-                PickupR.setPower(-1);
-
+            else if(toggleB){
+                toggleB = false;
+                LeftServo.setPosition(0.3);
+                RightServo.setPosition(0.7);
             }
 
         }
+
+
 
         /********End Pickup********/
-
-        telemetry.addData("Alien", Alien.getCurrentPosition());
-        telemetry.addData("Arm", Arm.getCurrentPosition());
-
-
-
-
 
 
         //Left trigger is squeezed but right trigger is not so we are going down
 
 
-
-
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         //telemetry.addData("Yaw (Z)", "%.2f Rad. (Heading)", botHeading);
-
-
-
-
+        telemetry.addData("A", toggleB);
 
         // Show the elapsed game time.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
 
     }
 
-
-
-    @Override
-    public void stop() {
-
-    }
-    void updateOrientation() {
-        RevHubOrientationOnRobot.LogoFacingDirection logo = logoFacingDirections[logoFacingDirectionPosition];
-        RevHubOrientationOnRobot.UsbFacingDirection usb = usbFacingDirections[usbFacingDirectionPosition];
-        try {
-            RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logo, usb);
-            imu.initialize(new IMU.Parameters(orientationOnRobot));
-            orientationIsValid = true;
-        } catch (IllegalArgumentException e) {
-            orientationIsValid = false;
-        }
-    }
 
 }
