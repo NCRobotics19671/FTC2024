@@ -152,7 +152,7 @@ public class RobotDriveAutonomous extends OpMode {
         runtime.reset();
 
         driveYdir(10, 0.1);
-
+        turnToAngle(90);
 
     }
 
@@ -193,11 +193,20 @@ public class RobotDriveAutonomous extends OpMode {
     }
 
     public void turnToAngle(int targetAngle) {
+        double turnco = 0;
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        double t = getRuntime();
+        double botheading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        if (botheading > targetAngle) {
+          }
+
+        motorBackLeft.setPower(turnco * 0.01);
+        motorBackRight.setPower(-turnco * 0.01);
+        motorFrontLeft.setPower(turnco *0.01);
+        motorFrontRight.setPower(-turnco * 0.01);
+        /*double t = getRuntime();
         double error = targetAngle - imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
         double derivative;
         while (Math.abs(error) > 0.5) { // 1 degree tolerance
@@ -230,10 +239,10 @@ public class RobotDriveAutonomous extends OpMode {
             motorBackRight.setPower(0);
             motorFrontLeft.setPower(0);
             motorFrontRight.setPower(0);
-
+*/
 
         }
-    }
+
 
 
     // Reverse the right side motors
@@ -321,5 +330,9 @@ public class RobotDriveAutonomous extends OpMode {
 
         }
 
+    }
+    public boolean test(double angle, int targetAngle){
+        int turnco = -1;
+        return angle <= targetAngle;
     }
 }
