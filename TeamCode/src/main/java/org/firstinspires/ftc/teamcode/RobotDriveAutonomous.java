@@ -85,6 +85,7 @@ public class RobotDriveAutonomous extends OpMode {
     double circumference = Math.PI * 2.95276;
 
     double MOTOR_TICK_COUNTS = 336;
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -117,19 +118,20 @@ public class RobotDriveAutonomous extends OpMode {
 
         Arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Alien.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-
+        motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorBackLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         // Reverse the right side motors
         // Reverse left motors if you are using NeveRests
 
         //motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-       // motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        // motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        Arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
 
 
         // Tell the driver that initialization is complete.
@@ -151,8 +153,10 @@ public class RobotDriveAutonomous extends OpMode {
     public void start() {
         runtime.reset();
 
-        driveYdir(10, 0.1);
-        turnToAngle(90);
+       driveYdir(20,0.1);
+       turnToAngle(0.5);
+       driveArm(90,0.5);
+
 
     }
 
@@ -192,7 +196,7 @@ public class RobotDriveAutonomous extends OpMode {
         }
     }
 
-    public void turnToAngle(int targetAngle) {
+    public void turnToAngle(double targetAngle) {
         double turnco = 0;
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -200,12 +204,23 @@ public class RobotDriveAutonomous extends OpMode {
         motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         double botheading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
         if (botheading > targetAngle) {
-          }
+            turnco = -1;
+        }
+        else if (botheading < targetAngle){turnco = 1;}
 
-        motorBackLeft.setPower(turnco * 0.01);
-        motorBackRight.setPower(-turnco * 0.01);
-        motorFrontLeft.setPower(turnco *0.01);
-        motorFrontRight.setPower(-turnco * 0.01);
+        motorBackLeft.setPower(-turnco * 0.5);
+        motorBackRight.setPower(turnco * 0.5);
+        motorFrontLeft.setPower(-turnco * 0.5);
+        motorFrontRight.setPower(turnco * 0.5);
+        if (turnco == -1){
+        while (botheading > targetAngle)
+        {botheading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);}}
+        else if (turnco == 1){ while (botheading < targetAngle)
+        {botheading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);}}
+        motorBackLeft.setPower(0);
+        motorBackRight.setPower(0);
+        motorFrontLeft.setPower(0);
+        motorFrontRight.setPower(0);
         /*double t = getRuntime();
         double error = targetAngle - imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
         double derivative;
@@ -241,8 +256,7 @@ public class RobotDriveAutonomous extends OpMode {
             motorFrontRight.setPower(0);
 */
 
-        }
-
+    }
 
 
     // Reverse the right side motors
@@ -254,8 +268,8 @@ public class RobotDriveAutonomous extends OpMode {
 
         //double StrafeRotations = 30/circumference;
         //int StrafeDrivingTarget =  (int)(StrafeRotations*MOTOR_TICK_COUNTS);
-        double rotationsNeeded = distance/circumference;
-        int encoderDrivingTarget =  (int)(rotationsNeeded*MOTOR_TICK_COUNTS);
+        double rotationsNeeded = distance / circumference;
+        int encoderDrivingTarget = (int) (rotationsNeeded * MOTOR_TICK_COUNTS);
 
         int leftFront = -encoderDrivingTarget;
         int leftBack = -encoderDrivingTarget;
@@ -282,7 +296,7 @@ public class RobotDriveAutonomous extends OpMode {
         motorFrontRight.setPower(power);
         motorBackRight.setPower(power);
 
-        while(motorBackLeft.isBusy() && motorBackRight.isBusy()){
+        while (motorBackLeft.isBusy() && motorBackRight.isBusy()) {
             telemetry.addData("Right Front", motorFrontRight.getCurrentPosition());
             telemetry.addData("Left Front", motorFrontLeft.getCurrentPosition());
             telemetry.addData("Right Back", motorBackRight.getCurrentPosition());
@@ -293,18 +307,19 @@ public class RobotDriveAutonomous extends OpMode {
         motorFrontRight.setPower(0);
         motorBackRight.setPower(0);
     }
+
     public void driveXdir(int distance, double power) {
 
 
         //double StrafeRotations = 30/circumference;
         //int StrafeDrivingTarget =  (int)(StrafeRotations*MOTOR_TICK_COUNTS);
-        double rotationsNeeded = distance/circumference;
-        int encoderDrivingTarget =  (int)(rotationsNeeded*MOTOR_TICK_COUNTS);
+        double rotationsNeeded = distance / circumference;
+        int encoderDrivingTarget = (int) (rotationsNeeded * MOTOR_TICK_COUNTS);
 
-        int leftFront = encoderDrivingTarget;
-        int leftBack = encoderDrivingTarget;
-        int rightFront = encoderDrivingTarget;
-        int rightBack = encoderDrivingTarget;
+        int leftFront = -encoderDrivingTarget;
+        int leftBack = -encoderDrivingTarget;
+        int rightFront = -encoderDrivingTarget;
+        int rightBack = -encoderDrivingTarget;
 
         motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -312,8 +327,8 @@ public class RobotDriveAutonomous extends OpMode {
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         motorFrontLeft.setTargetPosition(leftFront);
-        motorBackLeft.setTargetPosition(-1*leftBack);
-        motorFrontRight.setTargetPosition(-1*rightFront);
+        motorBackLeft.setTargetPosition(-1 * leftBack);
+        motorFrontRight.setTargetPosition(-1 * rightFront);
         motorBackRight.setTargetPosition(rightBack);
 
         motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -326,13 +341,66 @@ public class RobotDriveAutonomous extends OpMode {
         motorFrontRight.setPower(power);
         motorBackRight.setPower(power);
 
-        while(motorBackLeft.isBusy() && motorBackRight.isBusy()){
+        while (motorBackLeft.isBusy() && motorBackRight.isBusy()) {
 
         }
+        motorFrontLeft.setPower(0);
+        motorBackLeft.setPower(0);
+        motorFrontRight.setPower(0);
+        motorBackRight.setPower(0);
 
     }
-    public boolean test(double angle, int targetAngle){
-        int turnco = -1;
-        return angle <= targetAngle;
+    public void driveArm(int angle, double power) {
+
+
+        //double StrafeRotations = 30/circumference;
+        //int StrafeDrivingTarget =  (int)(StrafeRotations*MOTOR_TICK_COUNTS);
+        double rotationsNeeded = angle/360.0;
+        int encoderDrivingTarget = (int)(rotationsNeeded*10000);
+        int target = encoderDrivingTarget;
+
+
+
+
+        Arm.setTargetPosition(target);
+
+        Arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        Arm.setPower(power);
+
+
+        while (Arm.isBusy()) {
+
+        }
+        Arm.setPower(0);
+
+
+    }
+
+    public void driveAlien(float distance, double power) {
+
+
+        //double StrafeRotations = 30/circumference;
+        //int StrafeDrivingTarget =  (int)(StrafeRotations*MOTOR_TICK_COUNTS);
+        double rotationsNeeded = distance/360.0;
+        int encoderDrivingTarget = (int)(distance*625);
+        int target = encoderDrivingTarget;
+
+
+
+
+        Alien.setTargetPosition(target);
+
+        Alien.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        Alien.setPower(power);
+
+
+        while (Alien.isBusy()) {
+
+        }
+        Alien.setPower(0);
+
+
     }
 }
