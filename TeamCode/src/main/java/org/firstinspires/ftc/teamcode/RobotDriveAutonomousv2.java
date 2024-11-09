@@ -43,7 +43,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 
 @Autonomous
-public class RobotDriveAutonomous extends OpMode {
+public class RobotDriveAutonomousv2 extends OpMode {
     // Declare OpMode members.
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -264,42 +264,36 @@ public class RobotDriveAutonomous extends OpMode {
 
     public void driveYdir(int distance, double power) {
         //
-
+        double rpm = power * 500;
+        double speed = ((rpm*3*Math.PI)/60);
+        double inverse = 1/speed;
+        double addtime = distance * inverse;
         //double StrafeRotations = 30/circumference;
         //int StrafeDrivingTarget =  (int)(StrafeRotations*MOTOR_TICK_COUNTS);
-        double rotationsNeeded = distance / circumference;
-        int encoderDrivingTarget = (int) (rotationsNeeded * MOTOR_TICK_COUNTS);
+        double startt = getRuntime();
+        double t = getRuntime();
+  
 
-        int leftFront = -encoderDrivingTarget;
-        int leftBack = -encoderDrivingTarget;
-        int rightFront = -encoderDrivingTarget;
-        int rightBack = -encoderDrivingTarget;
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+      
 
-        motorFrontLeft.setTargetPosition(leftFront);
-        motorBackLeft.setTargetPosition(leftBack);
-        motorFrontRight.setTargetPosition(rightFront);
-        motorBackRight.setTargetPosition(rightBack);
-
-        motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         motorFrontLeft.setPower(power);
         motorBackLeft.setPower(power);
         motorFrontRight.setPower(power);
         motorBackRight.setPower(power);
-
-        while (motorBackLeft.isBusy() && motorBackRight.isBusy()) {
+        
+        double endt = (getRuntime() + addtime);
+        while (t < endt) {
             telemetry.addData("Right Front", motorFrontRight.getCurrentPosition());
             telemetry.addData("Left Front", motorFrontLeft.getCurrentPosition());
             telemetry.addData("Right Back", motorBackRight.getCurrentPosition());
             telemetry.addData("Left Back", motorBackLeft.getCurrentPosition());
+            t = getRuntime();
         }
         motorFrontLeft.setPower(0);
         motorBackLeft.setPower(0);
