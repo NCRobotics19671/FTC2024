@@ -282,10 +282,10 @@ public class RobotDriveAutonomousv2 extends OpMode {
       
 
 
-        motorFrontLeft.setPower(power);
-        motorBackLeft.setPower(power);
-        motorFrontRight.setPower(power);
-        motorBackRight.setPower(power);
+        motorFrontLeft.setPower(-power);
+        motorBackLeft.setPower(-power);
+        motorFrontRight.setPower(-power);
+        motorBackRight.setPower(-power);
         
         double endt = (getRuntime() + addtime);
         while (t < endt) {
