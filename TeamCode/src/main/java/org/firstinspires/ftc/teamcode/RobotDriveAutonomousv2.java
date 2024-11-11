@@ -153,7 +153,16 @@ public class RobotDriveAutonomousv2 extends OpMode {
     public void start() {
         runtime.reset();
 
-       driveYdir(20,0.1);
+       driveYdir(15,0.3);
+       //drop off sample
+       driveYdir(7,-0.3);
+       turnToAngle(-90);
+       driveXdir(12,0.3);
+       driveYdir(10,-0.3);
+
+
+
+
 
 
 
@@ -262,8 +271,9 @@ public class RobotDriveAutonomousv2 extends OpMode {
     // Reverse left motors if you are using NeveRests
 
 
-    public void driveYdir(int distance, double power) {
+    public void driveYdir(double distance, double power) {
         //
+        distance = distance/0.75;
         double rpm = power * 500;
         double speed = ((rpm*3*Math.PI)/60);
         double inverse = 1/speed;
