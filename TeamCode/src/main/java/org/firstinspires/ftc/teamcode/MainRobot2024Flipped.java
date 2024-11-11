@@ -20,6 +20,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -55,6 +56,7 @@ public class MainRobot2024Flipped extends OpMode
     private DcMotor Arm = null;
     private DcMotor Alien = null;
 
+    private Servo Claw = null;
 
 
     TouchSensor touch;
@@ -81,7 +83,7 @@ public class MainRobot2024Flipped extends OpMode
     float left = 0;
 
     float right = 0;
-    boolean toggleA = false;
+    boolean toggleA = true;
 
     boolean toggleB = false;
 
@@ -114,6 +116,7 @@ public class MainRobot2024Flipped extends OpMode
 
         Arm = hardwareMap.dcMotor.get("Arm");
         Alien = hardwareMap.dcMotor.get("Alien");
+        Claw = hardwareMap.get(Servo.class, "Claw");
 
         touch = hardwareMap.get(TouchSensor.class, "Touch");
 
@@ -232,6 +235,24 @@ public class MainRobot2024Flipped extends OpMode
 
         }
 
+        if (!gamepad1.a) {
+            toggleA = true;
+        }
+
+        if(gamepad1.a && toggleA){
+            toggleA=false;
+            if(!toggleB){
+                toggleB = true;
+
+                Claw.setPosition(1);
+            }
+            else if(toggleB){
+                toggleB = false;
+
+                Claw.setPosition(0);
+            }
+
+        }
 
 
 
@@ -290,9 +311,13 @@ public class MainRobot2024Flipped extends OpMode
 
         telemetry.addData("Alien", Alien.getCurrentPosition());
         telemetry.addData("Arm", Arm.getCurrentPosition());
+        telemetry.addData("Right Front", motorFrontRight.getCurrentPosition());
+        telemetry.addData("Left Front", motorFrontLeft.getCurrentPosition());
+        telemetry.addData("Right Back", motorBackRight.getCurrentPosition());
+        telemetry.addData("Left Back", motorBackLeft.getCurrentPosition());
 
-
-
+        telemetry.addData("A", toggleB);
+        telemetry.addData("servo",Claw.getPosition());
 
 
 
