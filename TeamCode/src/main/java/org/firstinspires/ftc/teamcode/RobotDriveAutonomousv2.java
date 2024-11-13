@@ -43,6 +43,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 
 @Autonomous
+
 public class RobotDriveAutonomousv2 extends OpMode {
     // Declare OpMode members.
 
@@ -154,7 +155,9 @@ public class RobotDriveAutonomousv2 extends OpMode {
         runtime.reset();
 
        driveYdir(20,0.3);
-        driveXdir(-16,0.3);
+       driveYdir(-5,0.3);
+       driveXdir(-16,0.3);
+       driveYdir(-15,0.3);
        //drop off sample
 
 
