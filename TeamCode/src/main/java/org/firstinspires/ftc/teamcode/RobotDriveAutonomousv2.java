@@ -155,9 +155,9 @@ public class RobotDriveAutonomousv2 extends OpMode {
         runtime.reset();
 
        driveYdir(20,0.3);
-       driveYdir(-5,0.3);
-       driveXdir(-16,0.3);
-       driveYdir(-15,0.3);
+       driveYdir(-11,0.4);
+       driveXdir(-55,0.3);
+       driveYdir(-10,0.4);
        //drop off sample
 
 
