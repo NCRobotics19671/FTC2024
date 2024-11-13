@@ -153,13 +153,9 @@ public class RobotDriveAutonomousv2 extends OpMode {
     public void start() {
         runtime.reset();
 
-       driveYdir(15,0.3);
+       driveYdir(20,0.3);
+        driveXdir(-16,0.3);
        //drop off sample
-       driveYdir(7,-0.3);
-       turnToAngle(-90);
-       driveXdir(12,0.3);
-       driveYdir(10,-0.3);
-
 
 
 
@@ -206,6 +202,7 @@ public class RobotDriveAutonomousv2 extends OpMode {
 
     public void turnToAngle(double targetAngle) {
         double turnco = 0;
+        targetAngle = targetAngle * 0.85714285714;
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -216,10 +213,10 @@ public class RobotDriveAutonomousv2 extends OpMode {
         }
         else if (botheading < targetAngle){turnco = 1;}
 
-        motorBackLeft.setPower(-turnco * 0.5);
-        motorBackRight.setPower(turnco * 0.5);
-        motorFrontLeft.setPower(-turnco * 0.5);
-        motorFrontRight.setPower(turnco * 0.5);
+        motorBackLeft.setPower(turnco * 0.5);
+        motorBackRight.setPower(-turnco * 0.5);
+        motorFrontLeft.setPower(turnco * 0.5);
+        motorFrontRight.setPower(-turnco * 0.5);
         if (turnco == -1){
         while (botheading > targetAngle)
         {botheading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);}}
@@ -273,8 +270,8 @@ public class RobotDriveAutonomousv2 extends OpMode {
 
     public void driveYdir(double distance, double power) {
         //
-
-        distance = distance/0.75;
+        double sign = distance/Math.abs(distance);
+        distance = Math.abs(distance)/0.75;
         double rpm = power * 500;
         double speed = ((rpm*3*Math.PI)/60);
         double inverse = 1/speed;
@@ -283,7 +280,7 @@ public class RobotDriveAutonomousv2 extends OpMode {
         //int StrafeDrivingTarget =  (int)(StrafeRotations*MOTOR_TICK_COUNTS);
         double startt = getRuntime();
         double t = getRuntime();
-  
+        power = sign *power;
 
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -314,7 +311,8 @@ public class RobotDriveAutonomousv2 extends OpMode {
 
     public void driveXdir(double distance, double power) {
 
-        //distance = distance/0.75;
+        double sign = distance/Math.abs(distance);
+        distance = Math.abs(distance)/0.5;
         double rpm = power * 500;
         double speed = ((rpm*3*Math.PI)/60);
         double inverse = 1/speed;
@@ -324,7 +322,7 @@ public class RobotDriveAutonomousv2 extends OpMode {
         double startt = getRuntime();
         double t = getRuntime();
 
-
+        power = sign *power;
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
