@@ -26,8 +26,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
  * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
@@ -42,9 +42,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic:MainRobot2024Flipped", group="Iterative Opmode")
+@TeleOp(name="PracticeDrive", group="Iterative Opmode")
 
-public class MainRobot2024Flipped extends OpMode
+public class PracticeDrive extends OpMode
 {
     // Declare OpMode members.
 
@@ -53,10 +53,10 @@ public class MainRobot2024Flipped extends OpMode
     private DcMotor motorFrontRight = null;
     private DcMotor motorBackLeft = null;
     private DcMotor motorBackRight = null;
-    private DcMotor Arm = null;
-    private DcMotor Alien = null;
+    //private DcMotor Arm = null;
+    //private DcMotor Alien = null;
 
-    private Servo Claw = null;
+    //private Servo Claw = null;
 
 
     TouchSensor touch;
@@ -114,16 +114,16 @@ public class MainRobot2024Flipped extends OpMode
         motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight");
         motorBackRight = hardwareMap.dcMotor.get("motorBackRight");
 
-        Arm = hardwareMap.dcMotor.get("Arm");
-        Alien = hardwareMap.dcMotor.get("Alien");
-        Claw = hardwareMap.get(Servo.class, "Claw");
+        //Arm = hardwareMap.dcMotor.get("Arm");
+        //Alien = hardwareMap.dcMotor.get("Alien");
+        //Claw = hardwareMap.get(Servo.class, "Claw");
 
-        touch = hardwareMap.get(TouchSensor.class, "Touch");
+        //touch = hardwareMap.get(TouchSensor.class, "Touch");
 
 
 
-        Arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        Alien.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //Arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //Alien.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Reverse the right side motors
         // Reverse left motors if you are using NeveRests
@@ -149,14 +149,14 @@ public class MainRobot2024Flipped extends OpMode
     @Override
     public void start() {
         runtime.reset();
-        if (touch.isPressed())
+       /* if (touch.isPressed())
         {Arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             Alien.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             Arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             Alien.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
     }
-
+*/}
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
@@ -174,10 +174,10 @@ public class MainRobot2024Flipped extends OpMode
         // This ensures all the powers maintain the same ratio,
         // but only if at least one is out of the range [-1, 1]
         double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-        double frontLeftPower = -(y + x + rx) / denominator;
+        double frontLeftPower = (y + x + rx) / denominator;
         double backLeftPower = -(y - x + rx) / denominator;
-        double frontRightPower = (y - x - rx) / denominator;
-        double backRightPower = (y + x - rx) / denominator;
+        double frontRightPower = -(y - x - rx) / denominator;
+        double backRightPower = -(y + x - rx) / denominator;
 
         motorFrontLeft.setPower(frontLeftPower);
         motorBackLeft.setPower(backLeftPower);
@@ -214,7 +214,7 @@ public class MainRobot2024Flipped extends OpMode
         motorFrontLeft.setPower(0.95*powerCoef*frontLeftPower);
         motorBackLeft.setPower(powerCoef*backLeftPower);
         motorFrontRight.setPower(powerCoef*frontRightPower);
-        motorBackRight.setPower(powerCoef*backRightPower);*/
+        motorBackRight.setPower(powerCoef*backRightPower);
 
 
         if (gamepad1.right_bumper && !touch.isPressed() && Alien.getCurrentPosition() < 7690) {
@@ -267,8 +267,8 @@ public class MainRobot2024Flipped extends OpMode
 
         Arm.setPower(power);
 
-        /**********Pickup********/
-    /*    if (!gamepad1.a) {
+
+      if (!gamepad1.a) {
             toggleA = true;
         }
 
@@ -309,15 +309,15 @@ public class MainRobot2024Flipped extends OpMode
 */
         /********End Pickup********/
 
-        telemetry.addData("Alien", Alien.getCurrentPosition());
-        telemetry.addData("Arm", Arm.getCurrentPosition());
+       // telemetry.addData("Alien", Alien.getCurrentPosition());
+        //telemetry.addData("Arm", Arm.getCurrentPosition());
         telemetry.addData("Right Front", motorFrontRight.getCurrentPosition());
         telemetry.addData("Left Front", motorFrontLeft.getCurrentPosition());
         telemetry.addData("Right Back", motorBackRight.getCurrentPosition());
         telemetry.addData("Left Back", motorBackLeft.getCurrentPosition());
 
         telemetry.addData("A", toggleB);
-        telemetry.addData("servo",Claw.getPosition());
+        //telemetry.addData("servo",Claw.getPosition());
 
 
 
