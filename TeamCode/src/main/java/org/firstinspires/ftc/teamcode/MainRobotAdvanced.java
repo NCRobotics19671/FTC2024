@@ -89,7 +89,7 @@ public class MainRobotAdvanced extends OpMode
 
     boolean toggleX = true;
 
-    double driveco = 1
+    double driveco = 1;
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -171,7 +171,7 @@ public class MainRobotAdvanced extends OpMode
         double liftPower = 0;
         double y = 0.75*-gamepad1.left_stick_y * Math.abs(gamepad1.left_stick_y); // Remember, Y stick value is reversed
         double x = 0.5*gamepad1.left_stick_x * 1.1 * Math.abs(gamepad1.left_stick_x); // Counteract imperfect strafing
-        double rx = (Math.abs(gamepad1.right_stick_x)/gamepad1.right_stick_x)*Math.min((gamepad1.right_stick_x * gamepad1.right_stick_x),0.5);
+        double rx = driveco*(Math.abs(gamepad1.right_stick_x)/gamepad1.right_stick_x)*Math.min((gamepad1.right_stick_x * gamepad1.right_stick_x),0.5);
         if (gamepad1.right_stick_x == 0){rx = 0;}
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio,
@@ -268,7 +268,7 @@ public class MainRobotAdvanced extends OpMode
                 driveco = 1;
             }
             else if(driveco == 1){
-                driveco == -1;
+                driveco = -1;
             }
 
         }
