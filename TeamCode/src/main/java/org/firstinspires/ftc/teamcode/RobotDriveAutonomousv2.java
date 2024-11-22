@@ -21,6 +21,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -55,6 +56,7 @@ public class RobotDriveAutonomousv2 extends OpMode {
     private DcMotor Arm = null;
     private DcMotor Alien = null;
 
+    private Servo Claw = null;
 
     double kP = 0.4; // to be tuned
     double kI = 0.15;  // to be tuned]
@@ -115,7 +117,7 @@ public class RobotDriveAutonomousv2 extends OpMode {
 
         Arm = hardwareMap.dcMotor.get("Arm");
         Alien = hardwareMap.dcMotor.get("Alien");
-
+        Claw = hardwareMap.get(Servo.class, "Claw");
 
         Arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Alien.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -153,11 +155,32 @@ public class RobotDriveAutonomousv2 extends OpMode {
     @Override
     public void start() {
         runtime.reset();
+        double t = getRuntime();
+        driveArm(300,0.3);
+        Claw.setPosition(1);
+        t = getRuntime();
+        while(getRuntime() < (t+1.2))
+        {}
+       driveYdir(4,0.8);
+       turnToAngle(95);
+       driveYdir(20,0.8);
+        driveArm(2500,0.8);
+        driveAlien(12,0.8);
+        Claw.setPosition(0);
+        t = getRuntime();
+        while(getRuntime() < (t+0.7))
+        {}
+        driveArm(2600,0.5);
+        driveAlien(0,0.8);
+        Claw.setPosition(1);
+        t = getRuntime();
+        while(getRuntime() < (t+0.5))
+        {
 
-       driveYdir(20,0.3);
-       driveYdir(-11,0.4);
-       driveXdir(-55,0.3);
-       driveYdir(-10,0.4);
+        }
+        driveArm(200,0.3);
+
+
        //drop off sample
 
 
@@ -360,7 +383,7 @@ public class RobotDriveAutonomousv2 extends OpMode {
         double rotationsNeeded = angle/360.0;
         int encoderDrivingTarget = (int)(rotationsNeeded*10000);
         int target = encoderDrivingTarget;
-
+        target = angle;
 
 
 
