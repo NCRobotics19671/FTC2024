@@ -17,9 +17,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -45,7 +43,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Autonomous
 
-public class RobotDriveAutonomousv2 extends OpMode {
+public class LockArm extends OpMode {
     // Declare OpMode members.
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -155,30 +153,8 @@ public class RobotDriveAutonomousv2 extends OpMode {
     @Override
     public void start() {
         runtime.reset();
-        double t = getRuntime();
-        driveArm(300,0.3);
-        Claw.setPosition(1);
-        t = getRuntime();
-        while(getRuntime() < (t+1.5))
-        {}
-       driveYdir(4,0.8);
-       turnToAngle(95);
-       driveYdir(20,0.8);
-        driveArm(2500,0.8);
-        driveAlien(12,0.8);
-        Claw.setPosition(0);
-        t = getRuntime();
-        while(getRuntime() < (t+0.7))
-        {}
-        driveArm(2600,0.5);
-        driveAlien(0,0.8);
-        Claw.setPosition(1);
-        t = getRuntime();
-        while(getRuntime() < (t+0.5))
-        {
-
-        }
-        driveArm(200,0.3);
+        Arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Arm.setPower(0);
 
 
        //drop off sample
@@ -427,5 +403,17 @@ public class RobotDriveAutonomousv2 extends OpMode {
         Alien.setPower(0);
 
 
+    }
+    public void closeClaw(){
+        Claw.setPosition(1);
+        double t = getRuntime();
+        while(getRuntime() < (t+1.5))
+        {}
+    }
+    public void openClaw(){
+        Claw.setPosition(0);
+        double t = getRuntime();
+        while(getRuntime() < (t+1.5))
+        {}
     }
 }

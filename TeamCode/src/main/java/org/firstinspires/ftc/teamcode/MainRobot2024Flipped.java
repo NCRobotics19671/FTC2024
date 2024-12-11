@@ -257,7 +257,7 @@ public class MainRobot2024Flipped extends OpMode
 
 
 
-        if (Arm.getCurrentPosition() > 4838)
+        if (Arm.getCurrentPosition() > 4200)
         {right = 0;}
         else {right = gamepad1.right_trigger;}
         if (!touch.isPressed())

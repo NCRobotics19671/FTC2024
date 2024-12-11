@@ -275,7 +275,8 @@ public class MainRobotAdvanced extends OpMode
 
 
 
-        if (Arm.getCurrentPosition() > 4838)
+        if (Arm.getCurrentPosition() > 4400) //fix this
+            
         {right = 0;}
         else {right = gamepad2.right_trigger;}
         if (!touch.isPressed())
