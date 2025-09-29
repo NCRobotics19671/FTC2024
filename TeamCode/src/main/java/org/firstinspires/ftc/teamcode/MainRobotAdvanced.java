@@ -22,8 +22,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
@@ -61,7 +62,7 @@ public class MainRobotAdvanced extends OpMode
 
     TouchSensor touch;
 
-
+    DistanceSensor distance;
     Orientation             lastAngles = new Orientation();
     double                  globalAngle, power = .30, correction, rotation;
     static RevHubOrientationOnRobot.LogoFacingDirection[] logoFacingDirections
@@ -123,7 +124,7 @@ public class MainRobotAdvanced extends OpMode
 
         touch = hardwareMap.get(TouchSensor.class, "Touch");
 
-
+        distance = hardwareMap.get(DistanceSensor.class, "distance");
 
         Arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Alien.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -152,7 +153,7 @@ public class MainRobotAdvanced extends OpMode
     @Override
     public void start() {
         runtime.reset();
-        if (touch.isPressed())
+      if (touch.isPressed())
         {Arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             Alien.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             Arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -257,6 +258,11 @@ public class MainRobotAdvanced extends OpMode
 
         }
 
+        if(gamepad2.dpad_up){
+            while(true){
+            Arm.setPower(-0.5);}
+        }
+
 
         if (!gamepad1.x) {
             toggleX = true;
@@ -275,7 +281,7 @@ public class MainRobotAdvanced extends OpMode
 
 
 
-        if (Arm.getCurrentPosition() > 4400) //fix this
+        if (Arm.getCurrentPosition() > 4300) //fix this
             
         {right = 0;}
         else {right = gamepad2.right_trigger;}
@@ -334,7 +340,7 @@ public class MainRobotAdvanced extends OpMode
         telemetry.addData("Left Front", motorFrontLeft.getCurrentPosition());
         telemetry.addData("Right Back", motorBackRight.getCurrentPosition());
         telemetry.addData("Left Back", motorBackLeft.getCurrentPosition());
-
+        telemetry.addData("dist", distance.getDistance(DistanceUnit.INCH));
         telemetry.addData("A", toggleB);
         telemetry.addData("servo",Claw.getPosition());
 

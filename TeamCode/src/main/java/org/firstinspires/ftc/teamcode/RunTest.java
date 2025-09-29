@@ -18,6 +18,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -42,21 +43,21 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="PracticeDrive", group="Iterative Opmode")
+@TeleOp(name="Runtest", group="Iterative Opmode")
 
-public class PracticeDrive extends OpMode
+public class RunTest extends OpMode
 {
     // Declare OpMode members.
 
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor motorFrontLeft = null;
-    private DcMotor motorFrontRight = null;
-    private DcMotor motorBackLeft = null;
-    private DcMotor motorBackRight = null;
-    //private DcMotor Arm = null;
-    //private DcMotor Alien = null;
+    private DcMotorEx motorFrontLeft = null;
+    private DcMotorEx motorFrontRight = null;
+    private DcMotorEx motorBackLeft = null;
+    private DcMotorEx motorBackRight = null;
+    private DcMotor Arm = null;
+    private DcMotor Alien = null;
 
-    //private Servo Claw = null;
+    private Servo Claw = null;
 
 
     TouchSensor touch;
@@ -108,27 +109,26 @@ public class PracticeDrive extends OpMode
        
 
         // Declare our motors
-        // Make sure your ID's match your configuration
-        motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft");
-        motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft");
-        motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight");
-        motorBackRight = hardwareMap.dcMotor.get("motorBackRight");
-
-        //Arm = hardwareMap.dcMotor.get("Arm");
-        //Alien = hardwareMap.dcMotor.get("Alien");
-        //Claw = hardwareMap.get(Servo.class, "Claw");
-
-        //touch = hardwareMap.get(TouchSensor.class, "Touch");
+        motorFrontLeft = hardwareMap.get(DcMotorEx.class, "motorFrontLeft");
+        motorBackLeft = hardwareMap.get(DcMotorEx.class, "motorBackLeft");
+        motorFrontRight = hardwareMap.get(DcMotorEx.class, "motorFrontRight");
+        motorBackRight = hardwareMap.get(DcMotorEx.class, "motorBackRight");
 
 
+        Arm = hardwareMap.dcMotor.get("Arm");
+        Alien = hardwareMap.dcMotor.get("Alien");
+        Claw = hardwareMap.get(Servo.class, "Claw");
 
-        //Arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //Alien.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        touch = hardwareMap.get(TouchSensor.class, "Touch");
+
+
+
+        Arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        Alien.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Reverse the right side motors
         // Reverse left motors if you are using NeveRests
-        motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
 
         // Tell the driver that initialization is complete.
@@ -149,14 +149,15 @@ public class PracticeDrive extends OpMode
     @Override
     public void start() {
         runtime.reset();
-       /* if (touch.isPressed())
+        if (touch.isPressed())
         {Arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             Alien.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             Arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             Alien.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
+
     }
-*/}
+
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
@@ -165,26 +166,11 @@ public class PracticeDrive extends OpMode
 
         // Setup a variable for each drive wheel to save power level for telemetry
 
-        double liftPower = 0;
-        double y = 0.85*-gamepad1.left_stick_y * Math.abs(gamepad1.left_stick_y); // Remember, Y stick value is reversed
-        double x = 0.5*gamepad1.left_stick_x * 1.1 * Math.abs(gamepad1.left_stick_x); // Counteract imperfect strafing
-        double rx = (Math.abs(gamepad1.right_stick_x)/gamepad1.right_stick_x)*Math.min((gamepad1.right_stick_x * gamepad1.right_stick_x),0.5);
-        if (gamepad1.right_stick_x == 0){rx = 0;}
-        // Denominator is the largest motor power (absolute value) or 1
-        // This ensures all the powers maintain the same ratio,
-        // but only if at least one is out of the range [-1, 1]
-        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-        double frontLeftPower = (y + x + rx) / denominator;
-        double backLeftPower = -(y - x + rx) / denominator;
-        double frontRightPower = -(y - x - rx) / denominator;
-        double backRightPower = -(y + x - rx) / denominator;
-
-        motorFrontLeft.setPower(frontLeftPower);
-        motorBackLeft.setPower(backLeftPower);
-        motorFrontRight.setPower(frontRightPower);
-        motorBackRight.setPower(backRightPower);
-
-
+        if(gamepad1.a){motorFrontRight.setPower(1);
+        }else{motorFrontRight.setPower(0);}
+        if(gamepad1.b){motorFrontLeft.setPower(1);}else{motorFrontLeft.setPower(0);}
+        if(gamepad1.x){motorBackLeft.setPower(1);}else{motorBackLeft.setPower(0);}
+        if(gamepad1.y){motorBackRight.setPower(1);}else{motorBackRight.setPower(0);}
         /*double y = -gamepad1.left_stick_y; // Remember, this is reversed!
         double x = gamepad1.left_stick_x*1.1; //* 1.1; // Counteract imperfect strafing
         double rx = gamepad1.right_stick_x;
@@ -214,7 +200,7 @@ public class PracticeDrive extends OpMode
         motorFrontLeft.setPower(0.95*powerCoef*frontLeftPower);
         motorBackLeft.setPower(powerCoef*backLeftPower);
         motorFrontRight.setPower(powerCoef*frontRightPower);
-        motorBackRight.setPower(powerCoef*backRightPower);
+        motorBackRight.setPower(powerCoef*backRightPower);*/
 
 
         if (gamepad1.right_bumper && !touch.isPressed() && Alien.getCurrentPosition() < 7690) {
@@ -257,7 +243,7 @@ public class PracticeDrive extends OpMode
 
 
 
-        if (Arm.getCurrentPosition() > 4838)
+        if (Arm.getCurrentPosition() > 4200)
         {right = 0;}
         else {right = gamepad1.right_trigger;}
         if (!touch.isPressed())
@@ -267,8 +253,8 @@ public class PracticeDrive extends OpMode
 
         Arm.setPower(power);
 
-
-      if (!gamepad1.a) {
+        /**********Pickup********/
+    /*    if (!gamepad1.a) {
             toggleA = true;
         }
 
@@ -309,15 +295,15 @@ public class PracticeDrive extends OpMode
 */
         /********End Pickup********/
 
-       // telemetry.addData("Alien", Alien.getCurrentPosition());
-        //telemetry.addData("Arm", Arm.getCurrentPosition());
+        telemetry.addData("Alien", Alien.getCurrentPosition());
+        telemetry.addData("Arm", Arm.getCurrentPosition());
         telemetry.addData("Right Front", motorFrontRight.getCurrentPosition());
         telemetry.addData("Left Front", motorFrontLeft.getCurrentPosition());
         telemetry.addData("Right Back", motorBackRight.getCurrentPosition());
         telemetry.addData("Left Back", motorBackLeft.getCurrentPosition());
 
         telemetry.addData("A", toggleB);
-        //telemetry.addData("servo",Claw.getPosition());
+        telemetry.addData("servo",Claw.getPosition());
 
 
 
